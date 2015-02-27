@@ -208,7 +208,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -234,7 +234,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -260,7 +260,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -286,7 +286,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -317,7 +317,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -343,7 +343,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -369,7 +369,7 @@ void MainWindow::on_pushButton_clicked()
                             QImage Image(files[GI].filePath());
                             if(Image.isNull()) continue;
                             qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH);
+                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
@@ -394,7 +394,7 @@ void MainWindow::on_pushButton_clicked()
             }
         }
 
-        QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB888);
+        QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB32);
         QPainter p(&Final);
         for(q = 0; q < ui->NumRows->value(); ++q){
             for(w = 0; w < ui->NumCols->value(); ++w){
@@ -403,7 +403,7 @@ void MainWindow::on_pushButton_clicked()
                         QImage Image(files[GI].filePath());
                         if(Image.isNull()) continue;
                         qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                        Image = Image.scaled(GW, GH);//.convertToFormat(QImage::Format_Indexed8);
+                        Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//.convertToFormat(QImage::Format_Indexed8);
                         /*for(int x = 0; x < GW; ++x){
                             for(int y = 0; y < GH; ++y){
                                 Final.setPixel(w*GW + x, q*GH + y, qGray(Image.pixel(x, y)));
@@ -422,7 +422,7 @@ void MainWindow::on_pushButton_clicked()
             if(GI>=files.size()) break;
         }
         iNum--;
-        Final = Final.convertToFormat(QImage::Format_Indexed8);
+        //Final = Final.convertToFormat(QImage::Format_Indexed8);
         saveImg(Final, QString("FINAL_%1.png").arg(cur));
         if(iNum==0){
             ui->previewField->setPixmap(QPixmap::fromImage(Final.scaled(ui->previewField->width(), ui->previewField->height())));
