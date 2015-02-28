@@ -17,6 +17,9 @@
 
 #include "about.h"
 #include "ui_about.h"
+#include <QSettings>
+
+#define readBSett(name, def) qSett.value("bSett"#name, def).toBool()
 
 About::About(QWidget *parent) :
     QDialog(parent),
@@ -24,6 +27,12 @@ About::About(QWidget *parent) :
     MainW(0)
 {
     ui->setupUi(this);
+    QSettings qSett;
+    if(readBSett(StayOnTop, true)){
+        Qt::WindowFlags flags = windowFlags();
+        flags |= Qt:: WindowStaysOnTopHint;
+        setWindowFlags(flags);
+    }
 }
 
 About::~About()

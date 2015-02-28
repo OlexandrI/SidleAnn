@@ -28,11 +28,12 @@
 #include "about.h"
 
 #define readBSett(name, def) qSett.value("bSett"#name, def).toBool()
+#define mqGray(a) ((qRed(a) + qGreen(a) + qBlue(a)) / 3)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    sett(new DialogSettings)
+    sett(new DialogSettings(this))
 {
     ui->setupUi(this);
     bScanned = false;
@@ -64,7 +65,7 @@ void MainWindow::DetectFirst(){
     QString addr = ui->tActiveDirectory->text();
     qDebug() << "Selected dir: " << addr;
     if(addr.isEmpty()){
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msgBox.setText("Please select a folder!");
         msgBox.exec();
         return;
@@ -74,7 +75,7 @@ void MainWindow::DetectFirst(){
     QDir dir(addr);
     QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files|QDir::NoDotAndDotDot);
     if(fileInfoList.size()<1){
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msgBox.setText("The selected folder does not contain images!");
         msgBox.exec();
         return;
@@ -84,7 +85,7 @@ void MainWindow::DetectFirst(){
         qDebug() << "First image: " << FirstFile.filePath();
         QPixmap Image(FirstFile.filePath());
         if(Image.isNull()){
-            QMessageBox msgBox;
+            QMessageBox msgBox(this);
             msgBox.setText("Unable to open the first image!");
             msgBox.exec();
             return;
@@ -93,7 +94,7 @@ void MainWindow::DetectFirst(){
         int W = Image.width();
         qDebug() << "Width: " << W << "Height: " << H;
         if(H<4 || W<4){
-            QMessageBox msgBox;
+            QMessageBox msgBox(this);
             msgBox.setText("First image is too small!");
             msgBox.exec();
             return;
@@ -155,7 +156,7 @@ void MainWindow::DetectFirst(){
         bScanned = true;
 
     }catch(...){
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msgBox.setText("Unable to open the first image!");
         msgBox.exec();
         return;
@@ -170,7 +171,7 @@ void MainWindow::on_toolButton_clicked()
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
     if(dir.isEmpty()){
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msgBox.setText("Please select a folder!");
         msgBox.exec();
         return;
@@ -194,7 +195,7 @@ void MainWindow::saveImg(QImage& Image, QString What){
         try{
             if(!file.isEmpty()) Image.save(file+".png");
         }catch(...){
-            QMessageBox msgBox;
+            QMessageBox msgBox(this);
             msgBox.setText("Image not saved!");
             msgBox.exec();
             return;
@@ -238,11 +239,11 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qGray(C), 0, 0, 0));
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(mqGray(C), 0, 0, 0));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -264,11 +265,12 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(0, qGray(C), 0, 0));
+                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), mqGray(C), 0, 0));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -290,11 +292,12 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(0, 0, qGray(C), 0));
+                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), mqGray(C), 0));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -316,11 +319,12 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(0, 0, 0, qGray(C)));
+                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), qBlue(C2), mqGray(C)));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -334,7 +338,7 @@ void MainWindow::on_pushButton_clicked()
                 saveImg(Final, QString("FINAL_%1.png").arg(cur));
                 cur++;
                 continue;
-            }else if(iNum==3){
+            }else if(iNum>=3){
                 QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB32);
                 for(q = 0; q < ui->NumRows->value(); ++q){
                     for(w = 0; w < ui->NumCols->value(); ++w){
@@ -347,11 +351,11 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(qGray(C), 0, 0));
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(mqGray(C), 0, 0));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -373,11 +377,12 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(0, qGray(C), 0));
+                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), mqGray(C), 0));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -399,11 +404,12 @@ void MainWindow::on_pushButton_clicked()
                             for(int x = 0; x < GW; ++x){
                                 for(int y = 0; y < GH; ++y){
                                     QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(0, 0, qGray(C)));
+                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
+                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), qGreen(C2), mqGray(C)));
                                 }
                             }
                         }catch(...){
-                            QMessageBox msgBox;
+                            QMessageBox msgBox(this);
                             msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                             msgBox.exec();
                             return;
@@ -437,7 +443,7 @@ void MainWindow::on_pushButton_clicked()
                         }*/
                         p.drawImage(w*GW, q*GH, Image);
                     }catch(...){
-                        QMessageBox msgBox;
+                        QMessageBox msgBox(this);
                         msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
                         msgBox.exec();
                         return;
@@ -459,7 +465,7 @@ void MainWindow::on_pushButton_clicked()
     iNum = (tmp - floor(tmp)) * (ui->NumRows->value() * ui->NumCols->value());
     tmp = double(iNum) / double(ui->NumCols->value());
     Result = QString("Last file have %1 full rows (%1x%2) and %3 in last row.").arg((int)floor(tmp)).arg(ui->NumCols->value()).arg((int)ceil((tmp - floor(tmp))*double(ui->NumCols->value())));
-    QMessageBox msgBox;
+    QMessageBox msgBox(this);
     msgBox.setText(Result);
     msgBox.exec();
 }

@@ -30,14 +30,20 @@ DialogSettings::DialogSettings(QWidget *parent) :
     W(0)
 {
     ui->setupUi(this);
+    QSettings qSett;
     {
-        QSettings qSett;
         initBSett(AutoCalculate, true);
         initBSett(AutoSave, true);
         initBSett(SmartSave, true);
         initBSett(SaveRatioOnPreview, false);
         initBSett(DisableAlphaMode, true);
         initBSett(StayOnTop, true);
+    }
+
+    if(readBSett(StayOnTop, true)){
+        Qt::WindowFlags flags = windowFlags();
+        flags |= Qt:: WindowStaysOnTopHint;
+        setWindowFlags(flags);
     }
 }
 
