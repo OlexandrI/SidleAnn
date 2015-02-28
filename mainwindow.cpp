@@ -36,6 +36,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     bScanned = false;
+    QSettings qSett;
+    if(readBSett(StayOnTop, true)){
+        Qt::WindowFlags flags = windowFlags();
+        flags |= Qt:: WindowStaysOnTopHint;
+        setWindowFlags(flags);
+        //show();
+    }
+    sett->W = this;
 }
 
 MainWindow::~MainWindow()
@@ -448,8 +456,8 @@ void MainWindow::on_pushButton_clicked()
         cur++;
     }
     double tmp = (double)files.size() / (double)(ui->NumRows->value() * ui->NumCols->value());
-    iNum = tmp - floor(tmp);
-    tmp = double(iNum) / double(ui->NumRows->value());
+    iNum = (tmp - floor(tmp)) * (ui->NumRows->value() * ui->NumCols->value());
+    tmp = double(iNum) / double(ui->NumCols->value());
     Result = QString("Last file have %1 full rows (%1x%2) and %3 in last row.").arg((int)floor(tmp)).arg(ui->NumCols->value()).arg((int)ceil((tmp - floor(tmp))*double(ui->NumCols->value())));
     QMessageBox msgBox;
     msgBox.setText(Result);

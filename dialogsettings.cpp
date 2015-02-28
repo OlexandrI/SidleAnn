@@ -17,6 +17,7 @@
 
 #include "dialogsettings.h"
 #include "ui_dialogsettings.h"
+#include "mainwindow.h"
 #include <QDebug>
 
 #define readBSett(name, def) qSett.value("bSett"#name, def).toBool()
@@ -25,7 +26,8 @@
 
 DialogSettings::DialogSettings(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DialogSettings)
+    ui(new Ui::DialogSettings),
+    W(0)
 {
     ui->setupUi(this);
     {
@@ -35,6 +37,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
         initBSett(SmartSave, true);
         initBSett(SaveRatioOnPreview, false);
         initBSett(DisableAlphaMode, true);
+        initBSett(StayOnTop, true);
     }
 }
 
@@ -52,6 +55,21 @@ void DialogSettings::on_buttonBox_accepted()
         saveBSett(SmartSave);
         saveBSett(SaveRatioOnPreview);
         saveBSett(DisableAlphaMode);
+        saveBSett(StayOnTop);
     }
 }
 
+
+void DialogSettings::on_bStayOnTop_toggled(bool checked)
+{
+    if(W && W->isVisible()){
+        Qt::WindowFlags flags = W->windowFlags();
+        if (checked) {
+            flags |= Qt:: WindowStaysOnTopHint;
+        }else{
+            flags  &= ~Qt:: WindowStaysOnTopHint;
+        }
+        W->setWindowFlags(flags);
+        W->show();
+    }
+}

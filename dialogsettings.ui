@@ -61,6 +61,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="bStayOnTop">
+        <property name="text">
+         <string>Stay on top</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

@@ -20,6 +20,7 @@
 
 #include <QDialog>
 #include <qsettings.h>
+class MainWindow;
 
 namespace Ui {
 class DialogSettings;
@@ -31,10 +32,13 @@ class DialogSettings : public QDialog
 
 public:
     explicit DialogSettings(QWidget *parent = 0);
+    MainWindow* W;
     ~DialogSettings();
 
 private slots:
     void on_buttonBox_accepted();
+
+    void on_bStayOnTop_toggled(bool checked);
 
 private:
     Ui::DialogSettings *ui;
