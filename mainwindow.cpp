@@ -101,11 +101,11 @@ void MainWindow::DetectFirst(){
         }
         QSettings qSett;
 
-        int Rows = ui->FinalSizeY->value() / H;
-        int Cols = ui->FinalSizeX->value() / W;
+        int Rows = round(double(ui->FinalSizeY->value()) / double(H));
+        int Cols = round(double(ui->FinalSizeX->value()) / double(W));
 
         if(readBSett(SmartSave, false)){
-            int RR = Rows, CC = Cols, changes = (Rows + Cols) / 1.35;
+            int RR = Rows, CC = Cols, changes = (Rows + Cols) -2;
             QMap<int, double> Vari;
             QMap<int, QVector2D> Vari2;
             do{
@@ -113,7 +113,7 @@ void MainWindow::DetectFirst(){
                 res = res - floor(res);
                 Vari.insert(changes, res);
                 Vari2.insert(changes, QVector2D(RR, CC));
-                if(res<0.95){
+                if(res!=0.0 && res<0.99){
                     if(RR>CC) RR--;
                     else CC--;
                 }else{
@@ -215,6 +215,20 @@ void MainWindow::on_pushButton_clicked()
     filters << "*.png" << "*.jpg" << "*.bmp";
     QDir dir(addr);
     QFileInfoList files = dir.entryInfoList(filters, QDir::Files|QDir::NoDotAndDotDot);
+    {
+            QFileInfo& FirstFile = files[0];
+            QImage Image(FirstFile.filePath());
+            if(Image.isNull()){
+                QMessageBox msgBox(this);
+                msgBox.setText("Unable to open the first image!");
+                msgBox.exec();
+                return;
+            }
+            int H = ui->NumRows->value() * Image.height();
+            int W = ui->NumCols->value() * Image.width();
+            ui->FinalSizeX_2->setValue((W>ui->FinalSizeX->value())?ui->FinalSizeX->value():W);
+            ui->FinalSizeY_2->setValue((H>ui->FinalSizeY->value())?ui->FinalSizeY->value():H);
+    }
     int GH = ui->FinalSizeY_2->value() / ui->NumRows->value();
     int GW = ui->FinalSizeX_2->value() / ui->NumCols->value();
 
