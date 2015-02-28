@@ -1,3 +1,20 @@
+/** SidleAnn: Program for automatic creation FlipBook-textures from set pictures
+    Copyright (C) 2015 FrontPictures, OlexandrI
+    https://github.com/OlexandrI/SidleAnn
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. **/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
@@ -8,6 +25,7 @@
 #include <QVector2D>
 #include <QDebug>
 #include "math.h"
+#include "about.h"
 
 #define readBSett(name, def) qSett.value("bSett"#name, def).toBool()
 
@@ -309,7 +327,7 @@ void MainWindow::on_pushButton_clicked()
                 cur++;
                 continue;
             }else if(iNum==3){
-                QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB888);
+                QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB32);
                 for(q = 0; q < ui->NumRows->value(); ++q){
                     for(w = 0; w < ui->NumCols->value(); ++w){
                         if(GI>=files.size()) break;
@@ -426,11 +444,29 @@ void MainWindow::on_pushButton_clicked()
         saveImg(Final, QString("FINAL_%1.png").arg(cur));
         if(iNum==0){
             ui->previewField->setPixmap(QPixmap::fromImage(Final.scaled(ui->previewField->width(), ui->previewField->height())));
-            Result = QString("Last file have %1x%2").arg(w).arg(q);
         }
         cur++;
     }
-    /*QMessageBox msgBox;
+    double tmp = (double)files.size() / (double)(ui->NumRows->value() * ui->NumCols->value());
+    iNum = tmp - floor(tmp);
+    tmp = double(iNum) / double(ui->NumRows->value());
+    Result = QString("Last file have %1 full rows (%1x%2) and %3 in last row.").arg((int)floor(tmp)).arg(ui->NumCols->value()).arg((int)ceil((tmp - floor(tmp))*double(ui->NumCols->value())));
+    QMessageBox msgBox;
     msgBox.setText(Result);
-    msgBox.exec();*/
+    msgBox.exec();
+}
+
+void MainWindow::on_actionOpen_dir_triggered()
+{
+    on_toolButton_clicked();
+}
+
+void MainWindow::on_actionGenerate_triggered()
+{
+    on_pushButton_clicked();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    (new About(this))->show();
 }

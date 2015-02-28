@@ -15,17 +15,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. **/
 
+#ifndef ABOUT_H
+#define ABOUT_H
+
+#include <QDialog>
 #include "mainwindow.h"
-#include <QApplication>
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    QCoreApplication::setOrganizationName("FrontPictures");
-    QCoreApplication::setOrganizationDomain("frontpictures.com");
-    QCoreApplication::setApplicationName("SidleAnn");
-    MainWindow w;
-    w.show();
-
-    return a.exec();
+namespace Ui {
+class About;
 }
+
+class About : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit About(QWidget *parent = 0);
+    ~About();
+
+private slots:
+    void on_pushButton_clicked();
+
+private:
+    Ui::About *ui;
+    MainWindow* MainW;
+};
+
+#endif // ABOUT_H
