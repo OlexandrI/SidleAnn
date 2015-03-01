@@ -103,8 +103,9 @@ void MainWindow::DetectFirst(){
 
         int Rows = round(double(ui->FinalSizeY->value()) / double(H));
         int Cols = round(double(ui->FinalSizeX->value()) / double(W));
+        int iNums = floor(double(fileInfoList.size()) / double(Rows * Cols));
 
-        if(readBSett(SmartSave, false)){
+        if(readBSett(SmartSave, false) && iNums>1){
             int RR = Rows, CC = Cols, changes = (Rows + Cols) -2;
             QMap<int, double> Vari;
             QMap<int, QVector2D> Vari2;
@@ -131,8 +132,10 @@ void MainWindow::DetectFirst(){
                         vmaxi = ffi;
                 }
                 QVector2D VVari = Vari2[vmaxi.key()];
-                Rows = VVari.x();
-                Cols = VVari.y();
+                if((floor(double(fileInfoList.size()) / double(VVari.x() * VVari.y())) / double(iNums)) < 4.2){
+                    Rows = VVari.x();
+                    Cols = VVari.y();
+                }
             }
         }
 
