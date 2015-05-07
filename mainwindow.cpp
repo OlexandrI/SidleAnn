@@ -29,6 +29,32 @@
 
 #define readBSett(name, def) qSett.value("bSett"#name, def).toBool()
 #define mqGray(a) ((qRed(a) + qGreen(a) + qBlue(a)) / 3)
+#define forEveryPixel(WhatDo) for(q = 0; q < ui->NumRows->value(); ++q){\
+for(w = 0; w < ui->NumCols->value(); ++w){\
+    if(GI>=files.size()) break;\
+    try{\
+        QImage Image(files[GI].filePath());\
+        if(Image.isNull()) continue;\
+        qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();\
+        Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);\
+        for(int x = 0; x < GW; ++x){\
+            for(int y = 0; y < GH; ++y){\
+                QRgb C = Image.pixel(x, y);\
+                QRgb C2 = Final.pixel(w*GW + x, q*GH + y);\
+                WhatDo;\
+            }\
+        }\
+    }catch(...){\
+        QMessageBox msgBox(this);\
+        msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));\
+        msgBox.exec();\
+        return;\
+    }\
+    ++GI;\
+    ui->progressBar->setValue(GI * 100 / files.size());\
+}\
+if(GI>=files.size()) break;\
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -103,7 +129,7 @@ void MainWindow::DetectFirst(){
 
         int Rows = round(double(ui->FinalSizeY->value()) / double(H));
         int Cols = round(double(ui->FinalSizeX->value()) / double(W));
-        int iNums = floor(double(fileInfoList.size()) / double(Rows * Cols));
+        int iNums = ceil(double(fileInfoList.size()) / double(Rows * Cols));
 
         if(readBSett(SmartSave, false) && iNums>1){
             int RR = Rows, CC = Cols, changes = (Rows + Cols) -2;
@@ -245,199 +271,27 @@ void MainWindow::on_pushButton_clicked()
         if(readBSett(SmartSave, true)){
             if(iNum>=4 && !readBSett(DisableAlphaMode, true)){
                 QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGBA8888);
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(mqGray(C), 0, 0, 0));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgba(mqGray(C), 0, 0, 0)) );
                 iNum--;
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), mqGray(C), 0, 0));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), mqGray(C), 0, 0)) );
                 iNum--;
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), mqGray(C), 0));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), mqGray(C), 0)) );
                 iNum--;
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), qBlue(C2), mqGray(C)));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgba(qRed(C2), qGreen(C2), qBlue(C2), mqGray(C))) );
+                // forEveryPixel( );
                 iNum--;
-                saveImg(Final, QString("FINAL_%1.png").arg(cur));
+                saveImg(Final, QString("%1_%2.png").arg(ui->FinalPrefix->text()).arg(cur));
                 cur++;
                 continue;
             }else if(iNum>=3){
                 QImage Final(ui->FinalSizeX_2->value(), ui->FinalSizeY_2->value(), QImage::Format_RGB32);
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(mqGray(C), 0, 0));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgb(mqGray(C), 0, 0)) );
                 iNum--;
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), mqGray(C), 0));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), mqGray(C), 0)) );
                 iNum--;
-                for(q = 0; q < ui->NumRows->value(); ++q){
-                    for(w = 0; w < ui->NumCols->value(); ++w){
-                        if(GI>=files.size()) break;
-                        try{
-                            QImage Image(files[GI].filePath());
-                            if(Image.isNull()) continue;
-                            qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
-                            Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                            for(int x = 0; x < GW; ++x){
-                                for(int y = 0; y < GH; ++y){
-                                    QRgb C = Image.pixel(x, y);
-                                    QRgb C2 = Final.pixel(w*GW + x, q*GH + y);
-                                    Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), qGreen(C2), mqGray(C)));
-                                }
-                            }
-                        }catch(...){
-                            QMessageBox msgBox(this);
-                            msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
-                            msgBox.exec();
-                            return;
-                        }
-                        ++GI;
-                        ui->progressBar->setValue(GI * 100 / files.size());
-                    }
-                    if(GI>=files.size()) break;
-                }
+                forEveryPixel( Final.setPixel(w*GW + x, q*GH + y, qRgb(qRed(C2), qGreen(C2), mqGray(C))) );
                 iNum--;
-                saveImg(Final, QString("FINAL_%1.png").arg(cur));
+                saveImg(Final, QString("%1_%2.png").arg(ui->FinalPrefix->text()).arg(cur));
                 cur++;
                 continue;
             }
@@ -453,12 +307,14 @@ void MainWindow::on_pushButton_clicked()
                         if(Image.isNull()) continue;
                         qDebug() << "... work with " << files[GI].filePath() << " is " << (1+GI) << " from " << files.size();
                         Image = Image.scaled(GW, GH, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//.convertToFormat(QImage::Format_Indexed8);
-                        /*for(int x = 0; x < GW; ++x){
-                            for(int y = 0; y < GH; ++y){
-                                Final.setPixel(w*GW + x, q*GH + y, qGray(Image.pixel(x, y)));
+                        if(readBSett(AlwaysToGray, true)){
+                            for(int x = 0; x < GW; ++x){
+                                for(int y = 0; y < GH; ++y){
+                                    Final.setPixel(w*GW + x, q*GH + y, qGray(Image.pixel(x, y)));
+                                }
                             }
-                        }*/
-                        p.drawImage(w*GW, q*GH, Image);
+                        }else
+                            p.drawImage(w*GW, q*GH, Image);
                     }catch(...){
                         QMessageBox msgBox(this);
                         msgBox.setText(QString("Have problems with %1").arg(files[GI].fileName()));
@@ -472,7 +328,7 @@ void MainWindow::on_pushButton_clicked()
         }
         iNum--;
         //Final = Final.convertToFormat(QImage::Format_Indexed8);
-        saveImg(Final, QString("FINAL_%1.png").arg(cur));
+        saveImg(Final, QString("%1_%2.png").arg(ui->FinalPrefix->text()).arg(cur));
         if(iNum==0){
             ui->previewField->setPixmap(QPixmap::fromImage(Final.scaled(ui->previewField->width(), ui->previewField->height())));
         }

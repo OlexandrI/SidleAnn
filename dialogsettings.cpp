@@ -38,6 +38,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
         initBSett(SaveRatioOnPreview, false);
         initBSett(DisableAlphaMode, true);
         initBSett(StayOnTop, true);
+        initBSett(AlwaysToGray, true);
     }
 
     if(readBSett(StayOnTop, true)){
@@ -62,6 +63,7 @@ void DialogSettings::on_buttonBox_accepted()
         saveBSett(SaveRatioOnPreview);
         saveBSett(DisableAlphaMode);
         saveBSett(StayOnTop);
+        saveBSett(AlwaysToGray);
     }
 }
 
